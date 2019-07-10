@@ -14,4 +14,21 @@
         android:layout_height="wrap_content"
         android:text="ThemDuLieu" />
 
+    <Button
+        android:id="@+id/btnDocDuLieu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Doc Du Lieu" />
+
+    <TextView
+        android:id="@+id/txtHienThi"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:gravity="center" />
+
+    <ListView
+        android:id="@+id/lvUser"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 </LinearLayout>
