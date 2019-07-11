@@ -10,7 +10,7 @@
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="175dp"
-        android:layout_height="175dp"
+        android:layout_height="75dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginStart="118dp"
@@ -24,8 +24,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="277dp"
-        android:layout_marginEnd="169dp"
+        android:layout_marginTop="212dp"
+        android:layout_marginEnd="165dp"
+        android:foregroundGravity="center"
+        android:gravity="center"
+        android:hint="Version 1.8.0"
         android:textColor="#FFFFFF" />
 
     <LinearLayout
