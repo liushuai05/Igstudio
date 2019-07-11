@@ -1,4 +1,4 @@
-package Model;
+package com.example.googleservicefoody.Model;
 
 import java.io.Serializable;
 

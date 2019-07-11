@@ -1,4 +1,4 @@
-package Adapter;
+package com.example.googleservicefoody.Adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,7 +12,7 @@ import com.example.googleservicefoody.R;
 
 import java.util.List;
 
-import Model.UserModel;
+import com.example.googleservicefoody.Model.UserModel;
 
 public class AdapterUser extends ArrayAdapter<UserModel> {
 
