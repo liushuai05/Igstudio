@@ -5,15 +5,64 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#4CAF50"
-    tools:context=".View.SplashScreenActivity">
+    tools:context=".View.SplashScreenActivity" >
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="176dp"
+        android:layout_width="175dp"
         android:layout_height="175dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="120dp"
+        android:layout_marginStart="118dp"
         android:layout_marginTop="136dp"
-        app:srcCompat="@drawable/logo_matkinhig" />
+        android:foregroundGravity="center_vertical"
+        app:srcCompat="@drawable/logosmall" />
+
+    <TextView
+        android:id="@+id/txtVersion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="277dp"
+        android:layout_marginEnd="169dp"
+        android:textColor="#FFFFFF" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="610dp"
+        android:gravity="bottom|center"
+        android:orientation="horizontal">
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="@android:style/Widget.DeviceDefault.Light.ProgressBar"
+            android:layout_width="28dp"
+            android:layout_height="25dp"
+            android:layout_gravity="center"
+            android:progressTint="#00FDFBFB" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="168dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="Loading,please wait..."
+            android:textColor="#FFFFFF" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txtVersion2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="632dp"
+        android:layout_marginEnd="154dp"
+        android:text="igstudiovn.com"
+        android:textColor="#FFFFFF" />
+
 </RelativeLayout>
