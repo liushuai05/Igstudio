@@ -5,5 +5,6 @@
     <string name="facebook_app_id">713940865723397</string>
     <string name="fb_login_protocol_scheme">fb713940865723397</string>
 
-
+    <string name="login_email_hint">Email</string>
+    <string name="login_password_hint">Password</string>
 </resources>

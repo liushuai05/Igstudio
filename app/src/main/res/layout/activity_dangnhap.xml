@@ -22,7 +22,7 @@
             app:srcCompat="@drawable/logosmall" />
 
         <EditText
-            android:id="@+id/txtUsername"
+            android:id="@+id/txtEmailUser"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="50dp"
@@ -37,7 +37,7 @@
             android:textColorHint="@color/colorAccent" />
 
         <EditText
-            android:id="@+id/txtPassword"
+            android:id="@+id/txtPassUser"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="50dp"

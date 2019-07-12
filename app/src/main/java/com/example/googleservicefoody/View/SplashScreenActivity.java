@@ -26,7 +26,6 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         addEvent();
 
-
     }
 
 
@@ -45,6 +44,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                 public void run() {
                     Intent iLogin = new Intent(SplashScreenActivity.this,DangNhapActivity.class);
                     startActivity(iLogin);
+                    finish();
                 }
             },2000);
         } catch (PackageManager.NameNotFoundException e) {
