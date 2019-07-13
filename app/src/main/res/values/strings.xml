@@ -7,4 +7,23 @@
 
     <string name="login_email_hint">Email</string>
     <string name="login_password_hint">Password</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="place">Địa điểm</string>
+    <string name="suggestion">Suggestion</string>
+
+    <string name="moinhanh">Mới nhất</string>
+    <string name="danhmuc">Danh mục</string>
+    <string name="khuvuc">HCM</string>
+
+
+
+    <!--Function Trang Chu-->
+    <string name="gantoi">Gần tôi</string>
+    <string name="giaohang">Giao hàng</string>
+    <string name="gameandfun">Game-Fun</string>
+    <string name="danhgia">Đánh giá</string>
+    <string name="blog">Blog</string>
+    <string name="topmember">Top Member</string>
+
+
 </resources>

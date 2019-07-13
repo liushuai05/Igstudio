@@ -156,9 +156,12 @@ public class DangNhapActivity extends AppCompatActivity implements GoogleApiClie
                             FirebaseUser user = firebaseAuth.getCurrentUser();
                             Toast.makeText(DangNhapActivity.this, "Đăng nhập thành công",
                                     Toast.LENGTH_SHORT).show();
+                            Intent i = new Intent(DangNhapActivity.this,MapsActivity.class);
+                            startActivity(i);
+
                         } else {
                             // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithEmail:failure", task.getException());
+                            Log.e(TAG, "signInWithEmail:failure", task.getException());
                             Toast.makeText(DangNhapActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         }
