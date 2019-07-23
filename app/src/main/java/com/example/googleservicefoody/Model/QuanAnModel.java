@@ -118,9 +118,8 @@ public class QuanAnModel implements Serializable {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 DataSnapshot dataQuanAn = dataSnapshot.child("quanans");
-                for (DataSnapshot data :
-                        dataQuanAn.getChildren()) {
-                    QuanAnModel  quanAnModel = dataQuanAn.getValue(QuanAnModel.class);
+                for (DataSnapshot data : dataQuanAn.getChildren()) {
+                    QuanAnModel quanAnModel = dataQuanAn.getValue(QuanAnModel.class);
                     diaDiemInterface.getDanhSachQuanAnModel(quanAnModel);
                 }
 

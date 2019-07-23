@@ -1,7 +1,6 @@
 package com.example.googleservicefoody.View.Flagments;
 
 
-
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,12 +15,11 @@ import com.example.googleservicefoody.R;
 public class DiaDiemFragment extends Fragment {
     DiaDiemController diaDiemController;
     RecyclerView recyclerView;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.layout_fragment_diadiem,container,false);
-       recyclerView = view.findViewById(R.id.recyclerView);
-
-
+        View view = inflater.inflate(R.layout.layout_fragment_diadiem, container, false);
+        recyclerView = view.findViewById(R.id.recyclerView);
         return view;
 
     }
