@@ -1,7 +1,6 @@
 package com.example.googleservicefoody.Controller;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,19 +20,18 @@ public class DiaDiemController {
 
     public DiaDiemController(Context context) {
         this.context = context;
-        quanAnModel = new QuanAnModel(); //khởi tạo
+        quanAnModel = new QuanAnModel(); //contructor
     }
 
     public void getDanhSachQuanAncontroller(RecyclerView recyclerViewDiaDiem) {
         arrQuanAn = new ArrayList<>();
-        adapterRecycleDiaDiem = new AdapterRecycleDiaDiem(arrQuanAn, R.layout.layout_custom_recycleview_diadiem);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context);
         recyclerViewDiaDiem.setLayoutManager(layoutManager);
+        adapterRecycleDiaDiem = new AdapterRecycleDiaDiem(arrQuanAn, R.layout.layout_custom_recycleview_diadiem);
         recyclerViewDiaDiem.setAdapter(adapterRecycleDiaDiem);
         DiaDiemInterface diaDiemInterface = new DiaDiemInterface() {
             @Override
             public void getDanhSachQuanAnModel(QuanAnModel quanAnModel) {
-                Log.d("kiemtra", quanAnModel.toString());
                 arrQuanAn.add(quanAnModel);
                 adapterRecycleDiaDiem.notifyDataSetChanged();
             }

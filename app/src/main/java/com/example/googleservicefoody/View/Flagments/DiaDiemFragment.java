@@ -20,13 +20,14 @@ public class DiaDiemFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.layout_fragment_diadiem, container, false);
         recyclerView = view.findViewById(R.id.recyclerView);
+        recyclerView.setNestedScrollingEnabled(false);
         return view;
-
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        recyclerView.setNestedScrollingEnabled(false);
         diaDiemController = new DiaDiemController(getContext());
         diaDiemController.getDanhSachQuanAncontroller(recyclerView);
     }

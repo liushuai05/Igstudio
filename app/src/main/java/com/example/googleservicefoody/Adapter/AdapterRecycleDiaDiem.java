@@ -28,7 +28,7 @@ public class AdapterRecycleDiaDiem extends RecyclerView.Adapter<AdapterRecycleDi
         TextView txtTenQuanAnDiaDiem,txtDiaChiDiaDiem;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            txtDiaChiDiaDiem = itemView.findViewById(R.id.txtTenQuanAnDiaDiem);
+            txtDiaChiDiaDiem = itemView.findViewById(R.id.txtDiaChiDiaDiem);
             txtTenQuanAnDiaDiem = itemView.findViewById(R.id.txtTenQuanAnDiaDiem);
         }
     }
