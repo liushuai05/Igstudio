@@ -1,5 +1,7 @@
 package com.example.googleservicefoody.Model;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import com.example.googleservicefoody.Controller.Interfaces.DiaDiemInterface;
@@ -11,16 +13,41 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 public class QuanAnModel implements Serializable {
 
     private boolean giaohang;
     private String giodongcua, giomocua, tenquanan, videogioithieu, maquanan;
     private ArrayList<String> tienich;
+
+
+    private ArrayList<String> hinhAnhQuanAn;
+
+    public QuanAnModel(boolean giaohang, String giodongcua, String giomocua, String tenquanan, String videogioithieu, String maquanan, ArrayList<String> tienich, ArrayList<String> hinhAnhQuanAn, long luotthich, DatabaseReference nodeRoot) {
+        this.giaohang = giaohang;
+        this.giodongcua = giodongcua;
+        this.giomocua = giomocua;
+        this.tenquanan = tenquanan;
+        this.videogioithieu = videogioithieu;
+        this.maquanan = maquanan;
+        this.tienich = tienich;
+        this.hinhAnhQuanAn = hinhAnhQuanAn;
+        this.luotthich = luotthich;
+    }
+
     private long luotthich;
 
     DatabaseReference nodeRoot;
 
+
+    public ArrayList<String> getHinhAnhQuanAn() {
+        return hinhAnhQuanAn;
+    }
+
+    public void setHinhAnhQuanAn(ArrayList<String> hinhAnhQuanAn) {
+        this.hinhAnhQuanAn = hinhAnhQuanAn;
+    }
     @Override
     public String toString() {
         return "QuanAnModel{" +
@@ -45,16 +72,6 @@ public class QuanAnModel implements Serializable {
 
     public QuanAnModel() {
         nodeRoot = FirebaseDatabase.getInstance().getReference();
-    }
-
-    public QuanAnModel(boolean giaohang, String giodongcua, String giomocua, String tenquanan, String videogioithieu, String maquanan, ArrayList<String> tienich) {
-        this.giaohang = giaohang;
-        this.giodongcua = giodongcua;
-        this.giomocua = giomocua;
-        this.tenquanan = tenquanan;
-        this.videogioithieu = videogioithieu;
-        this.maquanan = maquanan;
-        this.tienich = tienich;
     }
 
     public boolean isGiaohang() {
@@ -118,11 +135,17 @@ public class QuanAnModel implements Serializable {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 DataSnapshot dataQuanAn = dataSnapshot.child("quanans");
-                for (DataSnapshot data : dataQuanAn.getChildren()) {
-                    QuanAnModel quanAnModel = dataQuanAn.getValue(QuanAnModel.class);
+                for (DataSnapshot d : dataQuanAn.getChildren()) {
+                    QuanAnModel quanAnModel = d.getValue(QuanAnModel.class);
+                    quanAnModel.setMaquanan(d.getKey());
                     diaDiemInterface.getDanhSachQuanAnModel(quanAnModel);
+                    DataSnapshot dataHinhAnhQuanAn = dataSnapshot.child("hinhanhquanans").child(d.getKey() );
+                    ArrayList<String> hinhAnhList = new ArrayList<>();
+                    for (DataSnapshot m : dataHinhAnhQuanAn.getChildren()){
+                        hinhAnhList.add(m.getValue().toString());
+                    }
+                    quanAnModel.setHinhAnhQuanAn(hinhAnhList);
                 }
-
             }
 
             @Override

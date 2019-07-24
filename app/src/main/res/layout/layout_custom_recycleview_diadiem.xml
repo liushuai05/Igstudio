@@ -2,7 +2,8 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -57,6 +58,7 @@
         </LinearLayout>
 
         <ImageView
+            android:id="@+id/imgHinhQuanAn"
             android:layout_width="match_parent"
             android:layout_height="180dp"
             android:layout_margin="5dp"
@@ -64,12 +66,14 @@
             android:src="@drawable/anh_1" />
 
         <Button
+            android:id="@+id/btnDatHang"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:paddingTop="5dp"
             android:layout_margin="5dp"
             android:background="@drawable/custom_radiogroup_trangchu"
             android:text="@string/giaohang"
+            android:visibility="gone"
             android:drawableTop="@drawable/icon_delivery"
             android:textColor="@color/colorAccent" />
 
@@ -185,8 +189,5 @@
                 android:textAlignment="center"
                 android:textColor="@color/black" />
         </LinearLayout>
-
     </LinearLayout>
-
-
 </androidx.cardview.widget.CardView>

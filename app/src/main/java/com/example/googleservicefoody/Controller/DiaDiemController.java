@@ -33,7 +33,6 @@ public class DiaDiemController {
         DiaDiemInterface diaDiemInterface = new DiaDiemInterface() {
             @Override
             public void getDanhSachQuanAnModel(QuanAnModel quanAnModel) {
-                Log.d("kiemtra", quanAnModel.toString());
                 arrQuanAn.add(quanAnModel);
                 adapterRecycleDiaDiem.notifyDataSetChanged();
             }
