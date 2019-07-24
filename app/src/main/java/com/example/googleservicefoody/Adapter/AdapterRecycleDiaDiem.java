@@ -4,6 +4,8 @@ package com.example.googleservicefoody.Adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,10 +28,14 @@ public class AdapterRecycleDiaDiem extends RecyclerView.Adapter<AdapterRecycleDi
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView txtTenQuanAnDiaDiem,txtDiaChiDiaDiem;
+        Button btnDatHang;
+        ImageView imgHinhQuanAn;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             txtDiaChiDiaDiem = itemView.findViewById(R.id.txtDiaChiDiaDiem);
             txtTenQuanAnDiaDiem = itemView.findViewById(R.id.txtTenQuanAnDiaDiem);
+            btnDatHang = itemView.findViewById(R.id.btnDatHang);
+            imgHinhQuanAn = itemView.findViewById(R.id.imgHinhQuanAn);
         }
     }
 
@@ -46,6 +52,12 @@ public class AdapterRecycleDiaDiem extends RecyclerView.Adapter<AdapterRecycleDi
     public void onBindViewHolder(@NonNull AdapterRecycleDiaDiem.ViewHolder holder, int position) {
         QuanAnModel quanAnModel = arrayListQuanAn.get(position);
         holder.txtTenQuanAnDiaDiem.setText(quanAnModel.getTenquanan());
+        if (quanAnModel.isGiaohang()){
+            holder.btnDatHang.setVisibility(View.VISIBLE);
+        }
+        if (quanAnModel.getHinhAnhQuanAn().size() > 0 ){
+
+        }
     }
 
     @Override
