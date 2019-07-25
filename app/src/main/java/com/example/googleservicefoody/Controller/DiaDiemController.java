@@ -1,7 +1,8 @@
 package com.example.googleservicefoody.Controller;
 
-import android.app.ProgressDialog;
 import android.content.Context;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,7 +25,7 @@ public class DiaDiemController {
         quanAnModel = new QuanAnModel(); //contructor
     }
 
-    public void getDanhSachQuanAncontroller(RecyclerView recyclerViewDiaDiem, final ProgressDialog progressDialog) {
+    public void getDanhSachQuanAncontroller(RecyclerView recyclerViewDiaDiem, final ProgressBar p) {
         arrQuanAn = new ArrayList<>();
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context);
         recyclerViewDiaDiem.setLayoutManager(layoutManager);
@@ -35,7 +36,7 @@ public class DiaDiemController {
             public void getDanhSachQuanAnModel(QuanAnModel quanAnModel) {
                 arrQuanAn.add(quanAnModel);
                 adapterRecycleDiaDiem.notifyDataSetChanged();
-                progressDialog.dismiss();
+                p.setVisibility(View.GONE);
             }
         };
         quanAnModel.getDanhSachQuanAn(diaDiemInterface);
