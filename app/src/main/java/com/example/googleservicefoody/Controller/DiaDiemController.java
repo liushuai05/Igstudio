@@ -1,6 +1,7 @@
 package com.example.googleservicefoody.Controller;
 
 import android.content.Context;
+import android.location.Location;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -25,7 +26,7 @@ public class DiaDiemController {
         quanAnModel = new QuanAnModel(); //contructor
     }
 
-    public void getDanhSachQuanAncontroller(RecyclerView recyclerViewDiaDiem, final ProgressBar p) {
+    public void getDanhSachQuanAncontroller(RecyclerView recyclerViewDiaDiem, final ProgressBar p, Location vitrihientai) {
         arrQuanAn = new ArrayList<>();
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context);
         recyclerViewDiaDiem.setLayoutManager(layoutManager);
@@ -39,6 +40,6 @@ public class DiaDiemController {
                 p.setVisibility(View.GONE);
             }
         };
-        quanAnModel.getDanhSachQuanAn(diaDiemInterface);
+        quanAnModel.getDanhSachQuanAn(diaDiemInterface,vitrihientai);
     }
 }

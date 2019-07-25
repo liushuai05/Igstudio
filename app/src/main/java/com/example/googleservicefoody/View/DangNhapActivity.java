@@ -226,7 +226,6 @@ public class DangNhapActivity extends AppCompatActivity implements GoogleApiClie
             Intent iTrangChu = new Intent(this,TrangChuActivity.class);
             startActivity(iTrangChu);
         }else{
-            Toast.makeText(DangNhapActivity.this,"Có lỗi xảy ra vui lòng kiểm tra lại", Toast.LENGTH_LONG).show();
         }
     }
 

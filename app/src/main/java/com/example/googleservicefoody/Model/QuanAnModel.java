@@ -1,5 +1,8 @@
 package com.example.googleservicefoody.Model;
 
+import android.location.Location;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import com.example.googleservicefoody.Controller.Interfaces.DiaDiemInterface;
@@ -23,7 +26,17 @@ public class QuanAnModel implements Serializable {
     private ArrayList<String> hinhAnhQuanAn;
     private ArrayList<BinhLuanModel> binhLuanList;
 
-    public QuanAnModel(boolean giaohang, String giodongcua, String giomocua, String tenquanan, String videogioithieu, String maquanan, ArrayList<String> tienich, ArrayList<String> hinhAnhQuanAn, long luotthich, DatabaseReference nodeRoot, ArrayList<BinhLuanModel> binhLuanList ) {
+    public ArrayList<ChiNhanhQuanAnModel> getChiNhanhQuanAnList() {
+        return chiNhanhQuanAnList;
+    }
+
+    public void setChiNhanhQuanAnList(ArrayList<ChiNhanhQuanAnModel> chiNhanhQuanAnList) {
+        this.chiNhanhQuanAnList = chiNhanhQuanAnList;
+    }
+
+    private ArrayList<ChiNhanhQuanAnModel> chiNhanhQuanAnList;
+
+    public QuanAnModel(boolean giaohang, String giodongcua, String giomocua, String tenquanan, String videogioithieu, String maquanan, ArrayList<String> tienich, ArrayList<String> hinhAnhQuanAn, long luotthich, DatabaseReference nodeRoot, ArrayList<BinhLuanModel> binhLuanList) {
         this.giaohang = giaohang;
         this.giodongcua = giodongcua;
         this.giomocua = giomocua;
@@ -50,13 +63,14 @@ public class QuanAnModel implements Serializable {
         return binhLuanList;
     }
 
-    public void setBinhLuanList(ArrayList<BinhLuanModel> binhLuanList){
+    public void setBinhLuanList(ArrayList<BinhLuanModel> binhLuanList) {
         this.binhLuanList = binhLuanList;
     }
 
     public void setHinhAnhQuanAn(ArrayList<String> hinhAnhQuanAn) {
         this.hinhAnhQuanAn = hinhAnhQuanAn;
     }
+
     @Override
     public String toString() {
         return "QuanAnModel{" +
@@ -140,7 +154,7 @@ public class QuanAnModel implements Serializable {
         this.tienich = tienich;
     }
 
-    public void getDanhSachQuanAn(final DiaDiemInterface diaDiemInterface) {
+    public void getDanhSachQuanAn(final DiaDiemInterface diaDiemInterface, final Location vitrihientai) {
         ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -148,12 +162,11 @@ public class QuanAnModel implements Serializable {
                 for (DataSnapshot d : dataQuanAn.getChildren()) {
                     QuanAnModel quanAnModel = d.getValue(QuanAnModel.class);
                     quanAnModel.setMaquanan(d.getKey());
-                    diaDiemInterface.getDanhSachQuanAnModel(quanAnModel);
 
                     //lấy danh sách quán ăn theo mã
-                    DataSnapshot dataHinhAnhQuanAn = dataSnapshot.child("hinhanhquanans").child(d.getKey() );
+                    DataSnapshot dataHinhAnhQuanAn = dataSnapshot.child("hinhanhquanans").child(d.getKey());
                     ArrayList<String> hinhAnhList = new ArrayList<>();
-                    for (DataSnapshot m : dataHinhAnhQuanAn.getChildren()){
+                    for (DataSnapshot m : dataHinhAnhQuanAn.getChildren()) {
                         hinhAnhList.add(m.getValue().toString());
                     }
                     quanAnModel.setHinhAnhQuanAn(hinhAnhList);
@@ -162,7 +175,7 @@ public class QuanAnModel implements Serializable {
                     //lấy bình luận quán ăn theo mã
                     DataSnapshot dataBinhLuan = dataSnapshot.child("binhluans").child(d.getKey());
                     ArrayList<BinhLuanModel> blTempList = new ArrayList<>();
-                    for (DataSnapshot s : dataBinhLuan.getChildren()){
+                    for (DataSnapshot s : dataBinhLuan.getChildren()) {
                         BinhLuanModel binhLuanModel = s.getValue(BinhLuanModel.class);
                         binhLuanModel.setMabinhluan(s.getKey());
                         blTempList.add(binhLuanModel);
@@ -170,12 +183,30 @@ public class QuanAnModel implements Serializable {
                         //tham chieu den hinh anh binh luan
                         ArrayList<String> tmpHinhAnhBinhLuan = new ArrayList<>();
                         DataSnapshot dataHinhAnhBinhLuan = dataSnapshot.child("hinhanhbinhluans").child(binhLuanModel.getMabinhluan());
-                        for (DataSnapshot i : dataHinhAnhBinhLuan.getChildren()){
+                        for (DataSnapshot i : dataHinhAnhBinhLuan.getChildren()) {
                             tmpHinhAnhBinhLuan.add((i.getValue()).toString());
                         }
                         binhLuanModel.setHinhanh(tmpHinhAnhBinhLuan);
                     }
                     quanAnModel.setBinhLuanList(blTempList);
+
+
+                    //lay chi nhanh quan an
+                    ArrayList<ChiNhanhQuanAnModel> tmpChiNhanhQuanAnModels = new ArrayList<>();
+                    DataSnapshot dataChiNhanh = dataSnapshot.child("chinhanhquanans").child(quanAnModel.getMaquanan());
+                    for (DataSnapshot l : dataChiNhanh.getChildren()) {
+                        ChiNhanhQuanAnModel chiNhanhQuanAnModel = l.getValue(ChiNhanhQuanAnModel.class);
+                        Location vitriQuanAn = new Location("");
+                        vitriQuanAn.setLongitude(chiNhanhQuanAnModel.getLongitude());
+                        vitriQuanAn.setLatitude(chiNhanhQuanAnModel.getLatitude());
+                        double khoangcach = (vitrihientai.distanceTo(vitriQuanAn))/1000;
+                        Log.d("khoangcach", khoangcach + "");
+                        chiNhanhQuanAnModel.setKhoangcach(khoangcach);
+                        tmpChiNhanhQuanAnModels.add(chiNhanhQuanAnModel);
+                    }
+                    quanAnModel.setChiNhanhQuanAnList(tmpChiNhanhQuanAnModels);
+
+                    diaDiemInterface.getDanhSachQuanAnModel(quanAnModel);
                 }
             }
 

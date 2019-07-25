@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.googleservicefoody.Model.BinhLuanModel;
+import com.example.googleservicefoody.Model.ChiNhanhQuanAnModel;
 import com.example.googleservicefoody.Model.QuanAnModel;
 import com.example.googleservicefoody.R;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -36,7 +37,9 @@ public class AdapterRecycleDiaDiem extends RecyclerView.Adapter<AdapterRecycleDi
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView txtTenQuanAnDiaDiem, txtDiaChiDiaDiem, txtTieuDe, txtTieuDe2, txtNoiDung, txtNoiDung2, txtDiemDanhGia, txtDiemDanhGia2, txtTongBinhLuan, txtTongHinhAnh, txtDiemTrungBinh;
+        TextView txtTenQuanAnDiaDiem, txtDiaChiDiaDiem, txtTieuDe, txtTieuDe2, txtNoiDung, txtNoiDung2,
+                txtDiemDanhGia, txtDiemDanhGia2, txtTongBinhLuan, txtTongHinhAnh, txtDiemTrungBinh,
+                txtKhoangCach;
         Button btnDatHang;
         ImageView imgHinhQuanAn;
         CircleImageView cycleImageUser, cycleImageUser2;
@@ -62,6 +65,7 @@ public class AdapterRecycleDiaDiem extends RecyclerView.Adapter<AdapterRecycleDi
             containerBinhLuan = itemView.findViewById(R.id.containerBinhLuan);
             containerBinhLuan2 = itemView.findViewById(R.id.containerBinhLuan2);
             txtDiemTrungBinh = itemView.findViewById(R.id.txtDiemTrungBinh);
+            txtKhoangCach = itemView.findViewById(R.id.txtKhoangCach);
         }
     }
 
@@ -78,9 +82,13 @@ public class AdapterRecycleDiaDiem extends RecyclerView.Adapter<AdapterRecycleDi
     public void onBindViewHolder(@NonNull final AdapterRecycleDiaDiem.ViewHolder holder, int position) {
         QuanAnModel quanAnModel = arrayListQuanAn.get(position);
         holder.txtTenQuanAnDiaDiem.setText(quanAnModel.getTenquanan());
+
+        //button giao hang
         if (quanAnModel.isGiaohang()) {
             holder.btnDatHang.setVisibility(View.VISIBLE);
         }
+
+        //hinh anh quan an
         if (quanAnModel.getHinhAnhQuanAn().size() > 0) {
             StorageReference storageHinhAnh = FirebaseStorage.getInstance().getReference().child("hinhanh").child(quanAnModel.getHinhAnhQuanAn().get(0));
             long ONE_MEGABYTE = 1024 * 1024;
@@ -92,6 +100,8 @@ public class AdapterRecycleDiaDiem extends RecyclerView.Adapter<AdapterRecycleDi
                 }
             });
         }
+
+        //binh luan quan an
         if (quanAnModel.getBinhLuanList().size() > 0) {
 
 
@@ -120,14 +130,26 @@ public class AdapterRecycleDiaDiem extends RecyclerView.Adapter<AdapterRecycleDi
                 tongsoHinhAnh += binhLuanModel1.getHinhanh().size();
                 tmpDiem += binhLuanModel1.getChamdiem();
             }
-            double tmpDiemTrungBinh = tmpDiem/quanAnModel.getBinhLuanList().size();
+            double tmpDiemTrungBinh = tmpDiem / quanAnModel.getBinhLuanList().size();
             holder.txtTongBinhLuan.setText(tongsoHinhAnh + "");
-            holder.txtDiemTrungBinh.setText(String.format("%.2f",tmpDiemTrungBinh));
+            holder.txtDiemTrungBinh.setText(String.format("%.2f", tmpDiemTrungBinh));
         } else {
             holder.containerBinhLuan.setVisibility(View.GONE);
             holder.containerBinhLuan2.setVisibility(View.GONE);
             holder.txtTongBinhLuan.setText("0");
             holder.txtTongHinhAnh.setText("0");
+        }
+
+        //lay chi nhanh
+        if (quanAnModel.getChiNhanhQuanAnList().size() > 0) {
+            ChiNhanhQuanAnModel chiNhanhQuanAnModeltmp = quanAnModel.getChiNhanhQuanAnList().get(0);
+            for (ChiNhanhQuanAnModel c : quanAnModel.getChiNhanhQuanAnList()) {
+                if (chiNhanhQuanAnModeltmp.getKhoangcach() > c.getKhoangcach()) {
+                    chiNhanhQuanAnModeltmp = c;
+                }
+            }
+            holder.txtDiaChiDiaDiem.setText(chiNhanhQuanAnModeltmp.getDiachi());
+            holder.txtKhoangCach.setText(String.format("%.1f",chiNhanhQuanAnModeltmp.getKhoangcach()) + " km");
         }
     }
 
