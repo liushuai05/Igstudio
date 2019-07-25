@@ -1,7 +1,5 @@
 package com.example.googleservicefoody.Model;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import com.example.googleservicefoody.Controller.Interfaces.DiaDiemInterface;
@@ -10,10 +8,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 public class QuanAnModel implements Serializable {
 
@@ -23,8 +21,9 @@ public class QuanAnModel implements Serializable {
 
 
     private ArrayList<String> hinhAnhQuanAn;
+    private ArrayList<BinhLuanModel> binhLuanList;
 
-    public QuanAnModel(boolean giaohang, String giodongcua, String giomocua, String tenquanan, String videogioithieu, String maquanan, ArrayList<String> tienich, ArrayList<String> hinhAnhQuanAn, long luotthich, DatabaseReference nodeRoot) {
+    public QuanAnModel(boolean giaohang, String giodongcua, String giomocua, String tenquanan, String videogioithieu, String maquanan, ArrayList<String> tienich, ArrayList<String> hinhAnhQuanAn, long luotthich, DatabaseReference nodeRoot, ArrayList<BinhLuanModel> binhLuanList ) {
         this.giaohang = giaohang;
         this.giodongcua = giodongcua;
         this.giomocua = giomocua;
@@ -34,15 +33,25 @@ public class QuanAnModel implements Serializable {
         this.tienich = tienich;
         this.hinhAnhQuanAn = hinhAnhQuanAn;
         this.luotthich = luotthich;
+        this.binhLuanList = binhLuanList;
     }
 
     private long luotthich;
 
     DatabaseReference nodeRoot;
+    FirebaseStorage storageNote;
 
 
     public ArrayList<String> getHinhAnhQuanAn() {
         return hinhAnhQuanAn;
+    }
+
+    public ArrayList<BinhLuanModel> getBinhLuanList() {
+        return binhLuanList;
+    }
+
+    public void setBinhLuanList(ArrayList<BinhLuanModel> binhLuanList){
+        this.binhLuanList = binhLuanList;
     }
 
     public void setHinhAnhQuanAn(ArrayList<String> hinhAnhQuanAn) {
@@ -72,6 +81,7 @@ public class QuanAnModel implements Serializable {
 
     public QuanAnModel() {
         nodeRoot = FirebaseDatabase.getInstance().getReference();
+        storageNote = FirebaseStorage.getInstance();
     }
 
     public boolean isGiaohang() {
@@ -139,12 +149,33 @@ public class QuanAnModel implements Serializable {
                     QuanAnModel quanAnModel = d.getValue(QuanAnModel.class);
                     quanAnModel.setMaquanan(d.getKey());
                     diaDiemInterface.getDanhSachQuanAnModel(quanAnModel);
+
+                    //lấy danh sách quán ăn theo mã
                     DataSnapshot dataHinhAnhQuanAn = dataSnapshot.child("hinhanhquanans").child(d.getKey() );
                     ArrayList<String> hinhAnhList = new ArrayList<>();
                     for (DataSnapshot m : dataHinhAnhQuanAn.getChildren()){
                         hinhAnhList.add(m.getValue().toString());
                     }
                     quanAnModel.setHinhAnhQuanAn(hinhAnhList);
+
+
+                    //lấy bình luận quán ăn theo mã
+                    DataSnapshot dataBinhLuan = dataSnapshot.child("binhluans").child(d.getKey());
+                    ArrayList<BinhLuanModel> blTempList = new ArrayList<>();
+                    for (DataSnapshot s : dataBinhLuan.getChildren()){
+                        BinhLuanModel binhLuanModel = s.getValue(BinhLuanModel.class);
+                        binhLuanModel.setMabinhluan(s.getKey());
+                        blTempList.add(binhLuanModel);
+
+                        //tham chieu den hinh anh binh luan
+                        ArrayList<String> tmpHinhAnhBinhLuan = new ArrayList<>();
+                        DataSnapshot dataHinhAnhBinhLuan = dataSnapshot.child("hinhanhbinhluans").child(binhLuanModel.getMabinhluan());
+                        for (DataSnapshot i : dataHinhAnhBinhLuan.getChildren()){
+                            tmpHinhAnhBinhLuan.add((i.getValue()).toString());
+                        }
+                        binhLuanModel.setHinhanh(tmpHinhAnhBinhLuan);
+                    }
+                    quanAnModel.setBinhLuanList(blTempList);
                 }
             }
 

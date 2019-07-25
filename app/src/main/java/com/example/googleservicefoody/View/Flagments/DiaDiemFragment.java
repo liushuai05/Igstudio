@@ -1,6 +1,7 @@
 package com.example.googleservicefoody.View.Flagments;
 
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,10 +16,13 @@ import com.example.googleservicefoody.R;
 public class DiaDiemFragment extends Fragment {
     DiaDiemController diaDiemController;
     RecyclerView recyclerView;
+    ProgressDialog p;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.layout_fragment_diadiem, container, false);
+        p = new ProgressDialog(view.getContext(),R.style.AppCompatAlertDialogStyle);
+        p.show();
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setNestedScrollingEnabled(false);
         return view;
@@ -29,6 +33,6 @@ public class DiaDiemFragment extends Fragment {
         super.onStart();
         recyclerView.setNestedScrollingEnabled(false);
         diaDiemController = new DiaDiemController(getContext());
-        diaDiemController.getDanhSachQuanAncontroller(recyclerView);
+        diaDiemController.getDanhSachQuanAncontroller(recyclerView,p);
     }
 }

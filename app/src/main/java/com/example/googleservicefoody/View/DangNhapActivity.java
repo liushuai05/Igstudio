@@ -1,8 +1,8 @@
 package com.example.googleservicefoody.View;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -10,14 +10,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.googleservicefoody.R;
-import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
@@ -35,45 +35,71 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+import java.util.Arrays;
+import java.util.List;
 
-public class DangNhapActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
+public class DangNhapActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener, FirebaseAuth.AuthStateListener {
 
-    private TextView txtDangKy;
+    //view controller
+    private TextView txtDangKy,txtQuenMatKhau;
     private Button btnGoogle, btnDangNhap;
     private LoginButton btnFacebook;
-    private CallbackManager callbackManager;
-    private FirebaseAuth firebaseAuth;
-    private String TAG = "You are Loginning Facebook Account";
-    private FirebaseAuth.AuthStateListener authStateListener;
     EditText txtEmailUser, txtPassUser;
 
-    String email, password;
 
-    private GoogleApiClient googleApiClient;
+
+    //firebase api
+    private CallbackManager callbackManager;
+    private FirebaseAuth firebaseAuth;
+    private FirebaseAuth.AuthStateListener authStateListener;
+    private GoogleApiClient apiClient;
+    SharedPreferences sharedPreferences;
+    LoginManager loginManager;
+    public static int REQUESTCODE_DANGNHAP_GOOGLE = 99;
+    public static int KIEMTRA_PROVIDER_DANGNHAP = 0;
+
+    private String TAG = "You are Loginning Facebook Account";
+    private String email, password;
+    List<String> permissionFacebook = Arrays.asList("email","public_profile");
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_dangnhap);
-
         addControl();
-
         addEvent();
     }
 
     private void addControl() {
         txtDangKy = findViewById(R.id.txtDangKy);
+        txtQuenMatKhau = findViewById(R.id.txtQuenMatKhau);
         btnGoogle = findViewById(R.id.btnGoogle);
         btnDangNhap = findViewById(R.id.btnDangNhap);
         btnFacebook = findViewById(R.id.btnFacebook);
         txtEmailUser = findViewById(R.id.txtEmailUser);
         txtPassUser = findViewById(R.id.txtPassUser);
+
         firebaseAuth = FirebaseAuth.getInstance();
+        firebaseAuth.signOut();
+
         callbackManager = CallbackManager.Factory.create();
-        btnFacebook.setReadPermissions("email", "public_profile");
+        loginManager = LoginManager.getInstance();
+    }
 
+    private void addEvent() {
+        btnGoogle.setOnClickListener(this);
+        btnDangNhap.setOnClickListener(this);
+        btnFacebook.setOnClickListener(this);
+        txtDangKy.setOnClickListener(this);
+        txtQuenMatKhau.setOnClickListener(this);
+        sharedPreferences = getSharedPreferences("luudangnhap",MODE_PRIVATE);
+        TaoClientDangNhapGoogle();
+    }
 
+    private void TaoClientDangNhapGoogle() {
         //Yeu cau lay email va token cua user
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -81,170 +107,138 @@ public class DangNhapActivity extends AppCompatActivity implements GoogleApiClie
                 .build();
 
         //Ketnoi google api client
-        googleApiClient = new GoogleApiClient.Builder(this)
+        apiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this, this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API,gso)
                 .build();
     }
 
-    private void addEvent() {
-        btnGoogle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                signIn();
-            }
-        });
+    //Mở form đăng nhập bằng google
+    private void DangNhapGoogle(GoogleApiClient apiClient){
+        KIEMTRA_PROVIDER_DANGNHAP = 1;
+        Intent iDNGoogle = Auth.GoogleSignInApi.getSignInIntent(apiClient);
+        startActivityForResult(iDNGoogle,REQUESTCODE_DANGNHAP_GOOGLE);
+    }
 
-        txtDangKy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intenDangKy = new Intent(DangNhapActivity.this, DangKyActivity.class);
-                startActivity(intenDangKy);
-            }
-        });
-
-        btnFacebook.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+    private void DangNhapFacebook(){
+        loginManager.logInWithReadPermissions(this,permissionFacebook);
+        loginManager.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                Log.d(TAG, "facebook:onSuccess:" + loginResult);
-                handleFacebookAccessToken(loginResult.getAccessToken());
+                KIEMTRA_PROVIDER_DANGNHAP = 2;
+                String tokenID = loginResult.getAccessToken().getToken();
+                ChungThucDangNhapFireBase(tokenID);
             }
 
             @Override
             public void onCancel() {
-                Log.e(TAG, "facebook:onCancel");
+                Toast.makeText(DangNhapActivity.this, "Bạn vừa hủy, vui lòng đăng nhập bằng facebook lại", Toast.LENGTH_LONG).show();
             }
 
             @Override
             public void onError(FacebookException error) {
-                Log.e(TAG, "facebook:onError", error);
+                Toast.makeText(DangNhapActivity.this,error.toString(),Toast.LENGTH_LONG).show();
             }
         });
-
-        authStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null){
-                    Log.d(TAG, "onAuthStateChanged:signed_in: " + user.getUid());
-                }
-                else {
-                    Log.e(TAG, "onAuthStateChanged:signed_out");
-                }
-            }
-        };
-
-        btnDangNhap.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                danngNhapBangEmail();
-            }
-        });
-
     }
 
-    private void danngNhapBangEmail() {
-        email = txtEmailUser.getText().toString();
-        password = txtPassUser.getText().toString();
-        firebaseAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithEmail:success");
-                            FirebaseUser user = firebaseAuth.getCurrentUser();
-                            Toast.makeText(DangNhapActivity.this, "Đăng nhập thành công",
-                                    Toast.LENGTH_SHORT).show();
-                            Intent i = new Intent(DangNhapActivity.this,MapsActivity.class);
-                            startActivity(i);
-
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.e(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(DangNhapActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-    }
-
-    private void signIn() {
-        Intent iDangNhapGoogle = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
-        startActivityForResult(iDangNhapGoogle,26);
-        Log.d("Success", googleApiClient.isConnected() + "");
+    private void ChungThucDangNhapFireBase(String tokenID) {
+        if(KIEMTRA_PROVIDER_DANGNHAP == 1){
+            AuthCredential authCredential = GoogleAuthProvider.getCredential(tokenID,null);
+            firebaseAuth.signInWithCredential(authCredential);
+        }else if(KIEMTRA_PROVIDER_DANGNHAP == 2){
+            AuthCredential authCredential = FacebookAuthProvider.getCredential(tokenID);
+            firebaseAuth.signInWithCredential(authCredential);
+        }
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        callbackManager.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 26){
-            GoogleSignInResult googleSignInResult = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            handleSignInResult(googleSignInResult);
+        if(requestCode == REQUESTCODE_DANGNHAP_GOOGLE){
+            if(resultCode == RESULT_OK){
+                GoogleSignInResult signInResult = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+                GoogleSignInAccount account = signInResult.getSignInAccount();
+                String tokenID = account.getIdToken();
+                ChungThucDangNhapFireBase(tokenID);
+            }
+        }else{
+            callbackManager.onActivityResult(requestCode,resultCode,data);
         }
     }
 
-    private void handleSignInResult(GoogleSignInResult googleSignInResult) {
-        if (googleSignInResult.isSuccess()){
-            GoogleSignInAccount googleSignInAccount = googleSignInResult.getSignInAccount();
-            firebaseAuthWithGoogle(googleSignInAccount);
-        }
-        else{
-            Log.e("Error", "Error in : " + googleSignInResult);
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        switch (id){
+            case R.id.btnGoogle:
+                DangNhapGoogle(apiClient);
+                break;
+
+            case R.id.btnFacebook:
+                DangNhapFacebook();
+                break;
+
+            case R.id.txtDangKy:
+                Intent iDangKy = new Intent(DangNhapActivity.this,DangKyActivity.class);
+                startActivity(iDangKy);
+                break;
+
+            case R.id.btnDangNhap:
+                DangNhap();
+                break;
+//
+//            case R.id.txtQuenMatKhau:
+//                Intent iKhoiPhucMatKhau = new Intent(DangNhapActivity.this,KhoiPhucMatKhauActivity.class);
+//                startActivity(iKhoiPhucMatKhau);
+//                break;
         }
     }
 
-    private void firebaseAuthWithGoogle(GoogleSignInAccount googleSignInAccount) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(googleSignInAccount.getIdToken(), null);
-        firebaseAuth.signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+    private void DangNhap() {
+        email = txtEmailUser.getText().toString();
+        password = txtPassUser.getText().toString();
+        firebaseAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    FirebaseUser user = firebaseAuth.getCurrentUser();
-                }
-                else
-                {
-                    Log.e("Error", "signInWithCredential:failure", task.getException());
+                if(!task.isSuccessful()){
+                    Toast.makeText(DangNhapActivity.this,"LOGIN FAILED, PLEASE CHECK YOUR ID AND PASSWORD",Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
-    private void handleFacebookAccessToken(AccessToken token) {
-        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
-        firebaseAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = firebaseAuth.getCurrentUser();
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Toast.makeText(DangNhapActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Toast.makeText(this,"Please check your connect internet", Toast.LENGTH_LONG).show();
     }
 
+    @Override
+    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        if(user != null){
+
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("mauser",user.getUid());
+            editor.commit();
+
+            Intent iTrangChu = new Intent(this,TrangChuActivity.class);
+            startActivity(iTrangChu);
+        }else{
+            Toast.makeText(DangNhapActivity.this,"Có lỗi xảy ra vui lòng kiểm tra lại", Toast.LENGTH_LONG).show();
+        }
+    }
 
     @Override
     protected void onStart() {
         super.onStart();
-        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+        firebaseAuth.addAuthStateListener(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Toast.makeText(DangNhapActivity.this,"Please check your connect internet" + connectionResult , Toast.LENGTH_LONG).show();
+        firebaseAuth.removeAuthStateListener(this);
     }
 }

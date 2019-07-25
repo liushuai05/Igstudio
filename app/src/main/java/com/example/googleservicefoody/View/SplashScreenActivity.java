@@ -20,14 +20,9 @@ public class SplashScreenActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spashscreen);
-
-
         addControl();
-
         addEvent();
-
     }
-
 
     private void addEvent() {
 
@@ -42,7 +37,7 @@ public class SplashScreenActivity extends AppCompatActivity {
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    Intent iLogin = new Intent(SplashScreenActivity.this,TrangChuActivity.class);
+                    Intent iLogin = new Intent(SplashScreenActivity.this,DangNhapActivity.class);
                     startActivity(iLogin);
                     finish();
                 }
@@ -50,8 +45,5 @@ public class SplashScreenActivity extends AppCompatActivity {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-
     }
-
-
 }
